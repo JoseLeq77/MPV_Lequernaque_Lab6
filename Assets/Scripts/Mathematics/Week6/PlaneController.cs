@@ -13,6 +13,9 @@ namespace Mathematics.Week6
         [SerializeField] private float rollPlane;
         [SerializeField] private float rollhGain = 1f;
         [SerializeField] private MinMax rollTreshHold;
+        private float _verticalDirection = 0f;
+        private float _horizontalDirection = 0f;
+        [SerializeField] private float velocitySpeed = 5f;
 
         [Header("Rotation Data")]
         [SerializeField] private Quaternion qx = Quaternion.identity; //<0,,0,0,1>
@@ -25,6 +28,16 @@ namespace Mathematics.Week6
 
         protected float _pitchDirection = 0f;
         protected float _rollDirection = 0f;
+
+        [Header("Movement Limits")]
+        [SerializeField] private float LimitXmax = 6f;
+        [SerializeField] private float LimitYmax = 3f;
+        [SerializeField] private float LimitXmin = -6f;
+        [SerializeField] private float LimitYmin = -1.5f;
+
+        [Header("Info")]
+        [SerializeField] float rollValue;
+        [SerializeField] float pitchValue;
 
         private void FixedUpdate()
         {
@@ -62,6 +75,7 @@ namespace Mathematics.Week6
             {
                 transform.position = new Vector3(transform.position.x, LimitYmax, 0f);
             }
+
             if (transform.position.x < LimitXmin)
             {
                 transform.position = new Vector3(LimitXmin, transform.position.y, 0f);
@@ -71,26 +85,40 @@ namespace Mathematics.Week6
                 transform.position = new Vector3(LimitXmax, transform.position.y, 0f);
             }
 
+            if (_pitchDirection == 0)
+            {
+                pitchPlane = Mathf.Lerp(pitchPlane, 0f, Time.fixedDeltaTime * 2f);
+            }
+
+            if (_rollDirection == 0)
+            { 
+                rollPlane = Mathf.Lerp(rollPlane, 0f, Time.fixedDeltaTime * 2f);
+            }
+
+            if (_pitchDirection == 0 && _rollDirection == 0)
+            {
+                transform.position = Vector3.Lerp(transform.position, Vector3.zero, Time.fixedDeltaTime * 1.5f);
+            }
+
             UpdatePosition();
         }
 
-        
 
         //Pitch -> X Axis
         public void RotatePitch(InputAction.CallbackContext context)
         {
+            rollValue = context.ReadValue<float>();
             _pitchDirection = context.ReadValue<float>();
         }
 
         //Roll -> Z Axis
         public void RotateRoll(InputAction.CallbackContext context)
         {
+            pitchValue = context.ReadValue<float>();
             _rollDirection = context.ReadValue<float>();
         }
 
-        private float _verticalDirection = 0f;
-        private float _horizontalDirection = 0f;
-        [SerializeField] private float velocitySpeed = 5f;
+
 
         private Rigidbody _myRB;
 
@@ -101,45 +129,18 @@ namespace Mathematics.Week6
 
         public void TranslateVertical(InputAction.CallbackContext context)
         {
-            if (transform.position.y >= LimitYmin && transform.position.y <= LimitYmax)
-            {
-                _verticalDirection = context.ReadValue<float>();
-            }
-            else
-            {
-                _verticalDirection = 0f;
-            }
+            _verticalDirection = context.ReadValue<float>();
         }
 
         public void TranslateHorizontal(InputAction.CallbackContext context)
         {
-            if (transform.position.x >= LimitXmin && transform.position.x <= LimitXmax)
-            {
-                _horizontalDirection = context.ReadValue<float>();
-            }
-            else
-            {
-                _horizontalDirection = 0f;
-            }
+            _horizontalDirection = context.ReadValue<float>();
         }
 
         private void UpdatePosition()
         {
             _myRB.linearVelocity = new Vector3(-_horizontalDirection * velocitySpeed, -_verticalDirection * velocitySpeed, 0f);
         }
-
-        [SerializeField] private float LimitXmax = 13f;
-        [SerializeField] private float LimitYmax = 6.6f;
-        [SerializeField] private float LimitXmin = -13f;
-        [SerializeField] private float LimitYmin = -4.1f;
-
-        private Transform transform;
-
-        private void Awake()
-        {
-            transform = GetComponent<Transform>();
-        }
-
     }
 
     [System.Serializable]
@@ -148,5 +149,4 @@ namespace Mathematics.Week6
         public float MinValue;
         public float MaxValue;
     }
-    
 }
