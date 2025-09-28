@@ -12,9 +12,15 @@ namespace Mathematics.Week6
         protected Quaternion qz = Quaternion.identity; //<0,,0,0,1>
 
         protected Quaternion r = Quaternion.identity; //<0,,0,0,1>
+        protected Quaternion initialRotation = Quaternion.identity;
 
         protected float anguloSen;
         protected float anguloCos;
+
+        protected virtual void Start()
+        {
+            initialRotation = transform.rotation;
+        }
 
         protected virtual void FixedUpdate()
         {
@@ -35,8 +41,7 @@ namespace Mathematics.Week6
 
             //multiplicación y -> x -> z
             r = qy * qx * qz;
-
-            transform.rotation = r;
+            transform.rotation = initialRotation * r;
         }
     }
 }

@@ -95,10 +95,10 @@ namespace Mathematics.Week6
                 rollPlane = Mathf.Lerp(rollPlane, 0f, Time.fixedDeltaTime * 2f);
             }
 
-            if (_pitchDirection == 0 && _rollDirection == 0)
-            {
-                transform.position = Vector3.Lerp(transform.position, Vector3.zero, Time.fixedDeltaTime * 1.5f);
-            }
+            //if (_pitchDirection == 0 && _rollDirection == 0)
+            //{
+            //    transform.position = Vector3.Lerp(transform.position, Vector3.zero, Time.fixedDeltaTime * 1.5f);
+            //}
 
             UpdatePosition();
         }
